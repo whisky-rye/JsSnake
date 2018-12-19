@@ -1,0 +1,181 @@
+<!doctype html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<title>Js贪吃蛇</title>
+<style type="text/css">
+    *{ padding:0; margin:0; }
+    #kuang{ width:500px; height:500px; margin:10px auto; text-align:center; }
+    #box{ width:500px; height:500px; margin:10px auto; border:4px solid #000; position:relative; }
+    #box .snake{ list-style:none; width:20px; height:20px; background:#000; display:block; position:absolute;}
+    #box #food{ position:absolute; width:20px; height:20px; background:#f00; display:block;}
+    #a1{ left:100px; top:100px; }
+    #a2{ left:120px; top:100px; }
+    #a3{ left:140px; top:100px; }
+    #a4{ left:160px; top:100px; }
+    #num{ color:#F00; font-size:20px; font-weight:bold;}
+</style>
+</head>
+
+<!--  本来html/css/js三部分是拆分的,这里我就全部代码整合成一个html文件了  -->
+<!--  有需要的在自行拆分了  -->
+
+<body>
+      
+     <div id="kuang">   
+        <div id="box">
+           <p id="food"></p>
+           <li id="a1" class="snake"></li>
+           <li id="a2" class="snake"></li>
+           <li id="a3" class="snake"></li>
+           <li id="a4" class="snake"></li>
+        </div>
+        <p>The Snake Has Eaten <span id="num">0</span> Food</p>
+     </div>
+</body>
+
+</html>
+
+<script type="text/javascript">
+
+    var box = document.getElementById('box');
+    var food = document.getElementById('food');
+    var num= document.getElementById('num');
+	var eat = 0;
+	var food_x;
+	var food_y;
+	keynum = {};
+	keynum[37] = 37;
+	forwards = 39;
+
+
+    // 初始化游戏
+    window.onload = function(){
+
+         food_x = Math.floor(Math.random()*25)*20;
+         food_y = Math.floor(Math.random()*25)*20;
+         food.style.left = food_x+'px';
+         food.style.top = food_y+'px';
+		
+         window.onkeydown = function(e){
+             keynum = {};
+             keynum[e.keyCode] = e.keyCode;
+         };
+
+         setInterval(function(){
+
+             snake = box.getElementsByTagName('li');
+             snake[0].style.display = 'block';
+             snake_num = snake.length;
+             position = [];
+
+             for(var s=snake_num-1;s>=0;s--){
+                 position[s] = snake[s].offsetTop+'-'+snake[s].offsetLeft;
+                 if(s==snake_num-1){
+
+                    // 检测键盘上下左右是否被按下
+                    if( 39 in keynum ){
+                        if(forwards!=37){
+                            forwards=39; snake[s].style.left = snake[s].offsetLeft+20+'px';
+                        }else{
+                            snake[s].style.left = snake[s].offsetLeft-20+'px';
+                        }
+                    }  //  39  right
+
+                    if( 38 in keynum ){
+                        if(forwards!=40){
+                            forwards=38; snake[s].style.top = snake[s].offsetTop-20+'px';
+                        }else{
+                            snake[s].style.top = snake[s].offsetTop+20+'px';
+                        }
+                    }   //  38  up
+
+                    if( 37 in keynum ){
+                        if(forwards!=39){
+                            forwards=37; snake[s].style.left = snake[s].offsetLeft-20+'px';
+                        }else{
+                            snake[s].style.left = snake[s].offsetLeft+20+'px';
+                        }
+                    }  //  37  left
+
+
+                    if( 40 in keynum ){
+                        if(forwards!=38){
+                            forwards=40; snake[s].style.top = snake[s].offsetTop+20+'px';
+                        }else{
+                            snake[s].style.top = snake[s].offsetTop-20+'px';
+                        }
+                    }  //  40  down
+
+                      f_y = snake[s].offsetTop;
+                      f_x = snake[s].offsetLeft;
+                      if( f_x<0 || f_x>=500 || f_y<0 || f_y>=500 ){
+                          gameover();
+                      }
+
+                 }else{
+                     // 判断距离
+                      thepos = position[s+1].split('-');
+                      snake[s].style.top = thepos[0]+'px';
+                      snake[s].style.left = thepos[1]+'px';
+                 }
+             }
+
+             mytouch();
+             istouch(f_x,f_y,food_x,food_y);
+
+         },100);
+    };
+
+    function mytouch(){
+        t_x = position[0].split('-')[0];
+        t_y = position[0].split('-')[1];
+        len = position.length;
+        for(var i=1;i<len;i++){
+            if( position[i].split('-')[0] == t_x &&  position[i].split('-')[1] == t_y ){
+                gameover();
+            }
+        }
+    }
+
+    function istouch(f_x,f_y,food_x,food_y){
+        // 判断是否碰撞到，是的初始化下一个食物
+        if( f_x == food_x && f_y == food_y ){
+            eat++;
+            num.innerHTML = eat;
+            snake = box.getElementsByTagName('li');
+            li = document.createElement('li');
+            li.className = 'snake';
+            box.insertBefore(li,snake[0]);
+            li.style.top = 0;
+            li.style.left = 0;
+            li.style.display = 'none';
+            randomagain();
+        }
+    }
+
+    // 游戏结束
+    function gameover(){
+        alert('Game Over! You score is '+eat+'! please try again!');
+        window.location.href = 'JsSnake.html';
+    }
+
+    // 随机化新的食物
+    function randomagain(){
+        len = position.length;
+        food_x = Math.floor(Math.random()*25)*20;
+        food_y = Math.floor(Math.random()*25)*20;
+        for(var i=0;i<len;i++){
+            thepos = position[i].split('-');
+            if( thepos[0] != food_y && thepos[1] != food_x ){
+                food.style.left = food_x+'px';
+                food.style.top = food_y+'px';
+            }else{
+                randomagain();
+            }
+        }
+    }
+
+</script>
+
