@@ -31,7 +31,7 @@
            <li id="a3" class="snake"></li>
            <li id="a4" class="snake"></li>
         </div>
-        <p>The Snake Has Eaten <span id="num">0</span> Food</p>
+        <p id="p_text">The Snake Has Eaten <span id="num">0</span> Food</p>
      </div>
 </body>
 
@@ -45,6 +45,7 @@
 	var eat = 0;
 	var food_x;
 	var food_y;
+	var allt;
 	keynum = {};
 	keynum[37] = 37;
 	forwards = 39;
@@ -63,7 +64,7 @@
              keynum[e.keyCode] = e.keyCode;
          };
 
-         setInterval(function(){
+         allt = setInterval(function(){
 
              snake = box.getElementsByTagName('li');
              snake[0].style.display = 'block';
@@ -125,7 +126,7 @@
              mytouch();
              istouch(f_x,f_y,food_x,food_y);
 
-         },100);
+         },150);
     };
 
     function mytouch(){
@@ -157,8 +158,10 @@
 
     // 游戏结束
     function gameover(){
-        alert('Game Over! You score is '+eat+'! please try again!');
-        window.location.href = 'JsSnake.html';
+        p_text = document.getElementById('p_text');
+        p_text.innerHTML = ' Game Over! You score is <span style="color: #f00">'+eat+' </span>! ';
+        clearInterval(allt)   // 整个动画停止，重新开始游戏请刷新页面
+        // window.location.href = 'JsSnake.html';
     }
 
     // 随机化新的食物
@@ -178,4 +181,6 @@
     }
 
 </script>
+
+
 
